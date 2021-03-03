@@ -1,29 +1,29 @@
-# `@dwebvault/networker`
+# `@basestore/networker`
 
 
-A dwebvault networking module that uses [dSwarm](https://github.com/) to discovery peers. This module powers the networking portion of the [dHub](https://github.com/org/hyperspace).
+A basestore networking module that uses [dSwarm](https://github.com/dwebprotocol/dswarm) to discovery peers. This module powers the networking portion of the [dHub](https://github.com/dwebprotocol/dhub).
 
-Calls to `configure` will not be persisted across restarts, so you'll need to use a separate database that maps discovery keys to network configurations. The Hyperdrive daemon uses [Level](https://github.com/level/level) for this.
+Calls to `configure` will not be persisted across restarts, so you'll need to use a separate database that maps discovery keys to network configurations. The dDrive daemon uses [Level](https://github.com/level/level) for this.
 
-Since corestore has an all-to-all replication model (any shared cores between two peers will be automatically replicated), only one connection needs to be maintained per peer. If multiple connections are opened to a single peer as a result of that peer announcing many keys, then these connections will be automatically deduplicated by comparing NOISE keypairs.
+Since basestore has an all-to-all replication model (any shared bases between two peers will be automatically replicated), only one connection needs to be maintained per peer. If multiple connections are opened to a single peer as a result of that peer announcing many keys, then these connections will be automatically deduplicated by comparing NOISE keypairs.
 
-### Upgrading from dwebvault-swarm-networking
-This module's going through a major change + a rename as part of our push to develop [dHub](https://github.com/org/hyperspace). With these updates, `@dwebvault/networker` and dHub's `network` APIs are now interchangeable! 
+### Upgrading from basestore-swarm-networking
+This module's going through a major change + a rename as part of our push to develop [dHub](https://github.com/dwebprotocol/dhub). With these updates, `@basestore/networker` and dHub's `network` APIs are now interchangeable! 
 
-If you've previously been using `dwebvault-swarm-networking` and you'd like to upgrade, [`UPGRADE.md`](https://github.com//dwebvault-swarm-networking/blob/master/UPGRADE.md) explains the changes.
+If you've previously been using `basestore-swarm-networking` and you'd like to upgrade, [`UPGRADE.md`](https://github.com/dwebprotocol/basestore-swarm-networking/blob/master/UPGRADE.md) explains the changes.
 
 ### Installation
 ```
-npm i @dwebvault/networker
+npm i @basestore/networker
 ```
 
 ### Usage
 ```js
-const Networker = require('@dwebvault/networker')
-const DWebVault = require('dwebvault')
+const Networker = require('@basestore/networker')
+const Basestore = require('basestore')
 const ram = require('random-access-memory')
 
-const store = new DWebVault(ram)
+const store = new Basestore(ram)
 await store.ready()
 
 const networker = new Networker(store)
@@ -40,10 +40,10 @@ await networker.close()
 
 ### API
 
-#### `const networker = new Networker(dwebvault, networkingOptions = {})`
-Creates a new SwarmNetworker that will open replication streams on the `dwebvault` instance argument.
+#### `const networker = new Networker(basestore, networkingOptions = {})`
+Creates a new SwarmNetworker that will open replication streams on the `basestore` instance argument.
 
-`networkOpts` is an options map that can include all [dSwarm](https://github.com/) options (which will be passed to the internal swarm instance) as well as:
+`networkOpts` is an options map that can include all [dSwarm](https://github.com/dwebprotocol/dswarm) options (which will be passed to the internal swarm instance) as well as:
 ```js
 {
   id: crypto.randomBytes(32), // A randomly-generated peer ID,
@@ -99,7 +99,7 @@ Shut down the swarm networker.
 This will close all replication streams and then destroy the swarm instance. It will wait for all topics to be unannounced, so it might take some time.
 
 ### Swarm Extensions
-`@dwebvault/networker` introduces stream-level extensions that operate on each connection. They adhere to dDatabase's [extension API](https://github.com/protocol/hypercore#ext--feedregisterextensionname-handlers).
+`@basestore/networker` introduces stream-level extensions that operate on each connection. They adhere to dDatabase's [extension API](https://github.com/protocol/hypercore#ext--feedregisterextensionname-handlers).
 
 #### `const ext = await networker.registerExtension(name, { encoding, onmessage, onerror })`
 Registers an extension with name `name`.
