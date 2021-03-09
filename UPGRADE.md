@@ -1,6 +1,6 @@
-## `@corestore/networker` v1.0.0
+## `@basestorevault/networker` v1.0.0
 
-If you're migrating from `corestore-swarm-networking` v5 to `@corestore/networker` v1, there have been a few breaking changes to be aware of:
+If you're migrating from `basestorevault-swarm-networking` v5 to `@basestorevault/networker` v1, there have been a few breaking changes to be aware of:
 
 #### `join`/`leave` -> `configure`
 `join` and `leave` have been replaced by a single method, `configure`, which takes the options `announce`, `lookup`, and `flushed`. 

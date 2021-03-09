@@ -1,6 +1,6 @@
 const { NanoresourcePromise: Nanoresource } = require('nanoresource-promise/emitter')
-const HypercoreProtocol = require('hypercore-protocol')
-const hyperswarm = require('hyperswarm')
+const HypercoreProtocol = require('@ddatabase/protocol')
+const dswarm = require('dswarm')
 const codecs = require('codecs')
 const pump = require('pump')
 const maybe = require('call-me-maybe')
@@ -8,9 +8,9 @@ const maybe = require('call-me-maybe')
 const STREAM_PEER = Symbol('networker-stream-peer')
 
 class CorestoreNetworker extends Nanoresource {
-  constructor (corestore, opts = {}) {
+  constructor (basestorevault, opts = {}) {
     super()
-    this.corestore = corestore
+    this.basestorevault = basestorevault
     this.opts = opts
     this.keyPair = opts.keyPair || HypercoreProtocol.keyPair()
 
@@ -40,7 +40,7 @@ class CorestoreNetworker extends Nanoresource {
 
   _replicate (protocolStream) {
     // The initiator parameter here is ignored, since we're passing in a stream.
-    this.corestore.replicate(false, {
+    this.basestorevault.replicate(false, {
       ...this._replicationOpts,
       stream: protocolStream
     })
@@ -147,7 +147,7 @@ class CorestoreNetworker extends Nanoresource {
     const self = this
     if (this.swarm) return
 
-    this.swarm = hyperswarm({
+    this.swarm = dswarm({
       ...this.opts,
       announceLocalNetwork: true,
       queue: { multiplex: true }
