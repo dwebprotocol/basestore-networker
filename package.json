@@ -1,5 +1,5 @@
 {
-  "name": "@basestore/networker",
+  "name": "@basestorex/networker",
   "version": "1.0.0",
   "description": "A Basestore networking module based on dSwarm.",
   "main": "index.js",
@@ -13,7 +13,7 @@
   },
   "devDependencies": {
     "@dswarm/dht": "^1.0.0",
-    "basestorevault": "^1.0.0",
+    "basestorex": "^1.0.0",
     "@ddatabase/crypto": "^1.0.0",
     "random-access-memory": "^3.1.1",
     "standard": "^12.0.1",
@@ -27,7 +27,7 @@
     "url": "https://github.com/dwebprotocol/basestore-networker.git"
   },
   "keywords": [
-    "basestorevault",
+    "basestorex",
     "dswarm"
   ],
   "author": "PeepsLabs <peepslabs@gmail.com>",

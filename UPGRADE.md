@@ -1,6 +1,6 @@
-## `@basestorevault/networker` v1.0.0
+## `@basestore/networker` v1.0.0
 
-If you're migrating from `basestorevault-swarm-networking` v5 to `@basestorevault/networker` v1, there have been a few breaking changes to be aware of:
+If you're migrating from `basestore-swarm-networking` v5 to `@basestore/networker` v1, there have been a few breaking changes to be aware of:
 
 #### `join`/`leave` -> `configure`
 `join` and `leave` have been replaced by a single method, `configure`, which takes the options `announce`, `lookup`, and `flushed`. 
