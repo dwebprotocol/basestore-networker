@@ -3,7 +3,7 @@ const ram = require('random-access-memory')
 const dht = require('@dswarm/dht')
 const hypercoreCrypto = require('@ddatabase/crypto')
 const HypercoreProtocol = require('@ddatabase/protocol')
-const Corestore = require('basestorevault')
+const Corestore = require('basestorex')
 
 const CorestoreNetworker = require('..')
 

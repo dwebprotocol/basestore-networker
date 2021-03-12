@@ -1,7 +1,7 @@
 {
-  "name": "@basestore/networker",
-  "version": "1.0.1",
-  "description": "A Basestore networking module based on dSwarm.",
+  "name": "@basestorex/networker",
+  "version": "0.0.0",
+  "description": "A Basestore networking module based on dSwarm. (used in dweb-peersockets)",
   "main": "index.js",
   "dependencies": {
     "debug": "^4.1.1",
@@ -11,7 +11,7 @@
     "pump": "^3.0.0"
   },
   "devDependencies": {
-    "basestorevault": "^1.0.0",
+    "basestorex": "^1.0.0",
     "random-access-memory": "^3.1.1",
     "standard": "^12.0.1",
     "tape": "^4.9.0"
@@ -24,10 +24,10 @@
     "url": "git+https://github.com/dwebprotocol/basestore-networker.git"
   },
   "keywords": [
-    "basestorevault",
+    "basestore",
     "dswarm"
   ],
-  "author": "Andrew Osheroff <andrewosh@gmail.com>",
+  "author": "Peepslabs",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/dwebprotocol/basestore-networker/issues"

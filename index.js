@@ -8,15 +8,15 @@ const codecs = require('codecs')
 const pump = require('pump')
 const eos = require('end-of-stream')
 
-const log = require('debug')('basestorevault:network')
+const log = require('debug')('basestore:network')
 
 const OUTER_STREAM = Symbol('networker-outer-stream')
 const STREAM_PEER = Symbol('networker-stream-peer')
 
 class CorestoreNetworker extends EventEmitter {
-  constructor (basestorevault, opts = {}) {
+  constructor (basestore, opts = {}) {
     super()
-    this.basestorevault = basestorevault
+    this.basestore = basestore
     this.id = opts.id || crypto.randomBytes(32)
     this.opts = opts
     this.keyPair = opts.keyPair || HypercoreProtocol.keyPair()
@@ -48,7 +48,7 @@ class CorestoreNetworker extends EventEmitter {
 
   _replicate (protocolStream) {
     // The initiator parameter here is ignored, since we're passing in a stream.
-    this.basestorevault.replicate(false, {
+    this.basestore.replicate(false, {
       ...this._replicationOpts,
       stream: protocolStream
     })
