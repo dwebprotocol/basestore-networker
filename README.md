@@ -1,4 +1,4 @@
-# `@basestore/networker`
+# `@basestorex/networker`
 
 
 A basestore networking module that uses [dSwarm](https://github.com/dwebprotocol/dswarm) to discovery peers. This module powers the networking portion of the [dHub](https://github.com/dwebprotocol/dhub).
@@ -19,8 +19,8 @@ npm i @basestore/networker
 
 ### Usage
 ```js
-const Networker = require('@basestore/networker')
-const Basestore = require('basestore')
+const Networker = require('@basestorex/networker')
+const Basestore = require('basestorex')
 const ram = require('random-access-memory')
 
 const store = new Basestore(ram)
