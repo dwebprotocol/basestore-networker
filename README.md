@@ -99,7 +99,7 @@ Shut down the swarm networker.
 This will close all replication streams and then destroy the swarm instance. It will wait for all topics to be unannounced, so it might take some time.
 
 ### Swarm Extensions
-`@basestore/networker` introduces stream-level extensions that operate on each connection. They adhere to dDatabase's [extension API](https://github.com/protocol/hypercore#ext--feedregisterextensionname-handlers).
+`@basestore/networker` introduces stream-level extensions that operate on each connection. They adhere to dDatabase's [extension API](https://github.com/protocol/ddatabase#ext--feedregisterextensionname-handlers).
 
 #### `const ext = await networker.registerExtension(name, { encoding, onmessage, onerror })`
 Registers an extension with name `name`.

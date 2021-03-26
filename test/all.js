@@ -1,11 +1,11 @@
 const test = require('tape')
 const ram = require('random-access-memory')
 const dht = require('@dswarm/dht')
-const hypercoreCrypto = require('@ddatabase/crypto')
-const HypercoreProtocol = require('@ddatabase/protocol')
-const Corestore = require('basestorevault')
+const ddatabaseCrypto = require('@ddatabase/crypto')
+const DDatabaseProtocol = require('@ddatabase/protocol')
+const Basestore = require('basestorex')
 
-const CorestoreNetworker = require('..')
+const BasestoreNetworker = require('..')
 
 const BOOTSTRAP_PORT = 3100
 var bootstrap = null
@@ -14,38 +14,38 @@ test('simple replication', async t => {
   const { store: store1, networker: networker1 } = await create()
   const { store: store2, networker: networker2 } = await create()
 
-  const core1 = store1.get()
-  const core2 = store2.get(core1.key)
+  const base1 = store1.get()
+  const base2 = store2.get(base1.key)
 
-  await networker1.configure(core1.discoveryKey)
-  await networker2.configure(core2.discoveryKey)
+  await networker1.configure(base1.discoveryKey)
+  await networker2.configure(base2.discoveryKey)
 
-  await append(core1, 'hello')
-  const data = await get(core2, 0)
+  await append(base1, 'hello')
+  const data = await get(base2, 0)
   t.same(data, Buffer.from('hello'))
 
   await cleanup([networker1, networker2])
   t.end()
 })
 
-test('replicate multiple top-level cores', async t => {
+test('replicate multiple top-level bases', async t => {
   const { store: store1, networker: networker1 } = await create()
   const { store: store2, networker: networker2 } = await create()
 
-  const core1 = store1.get()
-  const core2 = store1.get()
-  const core3 = store2.get(core1.key)
-  const core4 = store2.get(core2.key)
+  const base1 = store1.get()
+  const base2 = store1.get()
+  const base3 = store2.get(base1.key)
+  const base4 = store2.get(base2.key)
 
-  await networker1.configure(core1.discoveryKey)
-  await networker1.configure(core2.discoveryKey)
-  await networker2.configure(core2.discoveryKey)
-  await networker2.configure(core3.discoveryKey)
+  await networker1.configure(base1.discoveryKey)
+  await networker1.configure(base2.discoveryKey)
+  await networker2.configure(base2.discoveryKey)
+  await networker2.configure(base3.discoveryKey)
 
-  await append(core1, 'hello')
-  await append(core2, 'world')
-  const d1 = await get(core3, 0)
-  const d2 = await get(core4, 0)
+  await append(base1, 'hello')
+  await append(base2, 'world')
+  const d1 = await get(base3, 0)
+  const d2 = await get(base4, 0)
   t.same(d1, Buffer.from('hello'))
   t.same(d2, Buffer.from('world'))
 
@@ -58,17 +58,17 @@ test('replicate to multiple receivers', async t => {
   const { store: store2, networker: networker2 } = await create()
   const { store: store3, networker: networker3 } = await create()
 
-  const core1 = store1.get()
-  const core2 = store2.get(core1.key)
-  const core3 = store3.get(core1.key)
+  const base1 = store1.get()
+  const base2 = store2.get(base1.key)
+  const base3 = store3.get(base1.key)
 
-  await networker1.configure(core1.discoveryKey)
-  await networker2.configure(core2.discoveryKey)
-  await networker3.configure(core3.discoveryKey)
+  await networker1.configure(base1.discoveryKey)
+  await networker2.configure(base2.discoveryKey)
+  await networker3.configure(base3.discoveryKey)
 
-  await append(core1, 'hello')
-  const d1 = await get(core2, 0)
-  const d2 = await get(core3, 0)
+  await append(base1, 'hello')
+  const d1 = await get(base2, 0)
+  const d2 = await get(base3, 0)
   t.same(d1, Buffer.from('hello'))
   t.same(d2, Buffer.from('hello'))
 
@@ -76,23 +76,23 @@ test('replicate to multiple receivers', async t => {
   t.end()
 })
 
-test('replicate sub-cores', async t => {
+test('replicate sub-bases', async t => {
   const { store: store1, networker: networker1 } = await create()
   const { store: store2, networker: networker2 } = await create()
 
-  const core1 = store1.get()
-  const core3 = store2.get(core1.key)
+  const base1 = store1.get()
+  const base3 = store2.get(base1.key)
 
-  await networker1.configure(core1.discoveryKey)
-  await networker2.configure(core3.discoveryKey)
+  await networker1.configure(base1.discoveryKey)
+  await networker2.configure(base3.discoveryKey)
 
-  const core2 = store1.get({ parents: [core1.key] })
-  const core4 = store2.get({ key: core2.key, parents: [core3.key]})
+  const base2 = store1.get({ parents: [base1.key] })
+  const base4 = store2.get({ key: base2.key, parents: [base3.key]})
 
-  await append(core1, 'hello')
-  await append(core2, 'world')
-  const d1 = await get(core3, 0)
-  const d2 = await get(core4, 0)
+  await append(base1, 'hello')
+  await append(base2, 'world')
+  const d1 = await get(base3, 0)
+  const d2 = await get(base4, 0)
   t.same(d1, Buffer.from('hello'))
   t.same(d2, Buffer.from('world'))
 
@@ -101,24 +101,24 @@ test('replicate sub-cores', async t => {
 })
 
 test('can replicate using a custom keypair', async t => {
-  const keyPair1 = HypercoreProtocol.keyPair()
-  const keyPair2 = HypercoreProtocol.keyPair()
+  const keyPair1 = DDatabaseProtocol.keyPair()
+  const keyPair2 = DDatabaseProtocol.keyPair()
   const { store: store1, networker: networker1 } = await create({ keyPair: keyPair1 })
   const { store: store2, networker: networker2 } = await create({ keyPair: keyPair2 })
 
-  const core1 = store1.get()
-  const core3 = store2.get(core1.key)
+  const base1 = store1.get()
+  const base3 = store2.get(base1.key)
 
-  await networker1.configure(core1.discoveryKey)
-  await networker2.configure(core3.discoveryKey)
+  await networker1.configure(base1.discoveryKey)
+  await networker2.configure(base3.discoveryKey)
 
-  const core2 = store1.get()
-  const core4 = store2.get({ key: core2.key })
+  const base2 = store1.get()
+  const base4 = store2.get({ key: base2.key })
 
-  await append(core1, 'hello')
-  await append(core2, 'world')
-  const d1 = await get(core3, 0)
-  const d2 = await get(core4, 0)
+  await append(base1, 'hello')
+  await append(base2, 'world')
+  const d1 = await get(base3, 0)
+  const d2 = await get(base4, 0)
   t.same(d1, Buffer.from('hello'))
   t.same(d2, Buffer.from('world'))
 
@@ -143,9 +143,9 @@ test('join status only emits flushed after all handshakes', async t => {
   const { store: store2, networker: networker2 } = await create()
   const { store: store3, networker: networker3 } = await create()
 
-  const core1 = store1.get()
-  const core2 = store2.get(core1.key)
-  await append(core1, 'hello')
+  const base1 = store1.get()
+  const base2 = store2.get(base1.key)
+  await append(base1, 'hello')
 
   let join2Flushed = 0
   let join3Flushed = 0
@@ -153,22 +153,22 @@ test('join status only emits flushed after all handshakes', async t => {
   let join3FlushPeers = 0
 
   // If ifAvail were not blocked, the get would immediately return with null (unless the connection's established immediately).
-  await networker1.configure(core1.discoveryKey)
+  await networker1.configure(base1.discoveryKey)
   networker2.on('flushed', dkey => {
-    if (!dkey.equals(core1.discoveryKey)) return
+    if (!dkey.equals(base1.discoveryKey)) return
     join2Flushed++
-    join2FlushPeers = core2.peers.length
+    join2FlushPeers = base2.peers.length
   })
-  await networker2.configure(core1.discoveryKey)
+  await networker2.configure(base1.discoveryKey)
 
-  const core3 = store3.get(core1.key)
+  const base3 = store3.get(base1.key)
   networker3.on('flushed', (dkey) => {
-    if (!dkey.equals(core1.discoveryKey)) return
+    if (!dkey.equals(base1.discoveryKey)) return
     join3Flushed++
-    join3FlushPeers = core3.peers.length
+    join3FlushPeers = base3.peers.length
     allFlushed()
   })
-  networker3.configure(core1.discoveryKey)
+  networker3.configure(base1.discoveryKey)
 
   async function allFlushed () {
     t.same(join2Flushed, 1)
@@ -196,7 +196,7 @@ test('peers are correctly added/removed', async t => {
   const { networker: networker2 } = await create()
   const { networker: networker3 } = await create()
 
-  const dkey = hypercoreCrypto.randomBytes(32)
+  const dkey = ddatabaseCrypto.randomBytes(32)
   await networker1.configure(dkey)
 
   const twoJoinsProm = new Promise(resolve => {
@@ -269,7 +269,7 @@ test('can register stream-wide extensions', async t => {
   networker3.on('peer-add', peer => {
     n3Ext.send('world', peer)
   })
-  const dkey = hypercoreCrypto.randomBytes(32)
+  const dkey = ddatabaseCrypto.randomBytes(32)
   await networker1.configure(dkey)
   await networker2.configure(dkey, { announce: false, lookup: true, flush: true })
   await networker3.configure(dkey, { announce: false, lookup: true, flush: true })
@@ -321,7 +321,7 @@ test('can register extensions with the same name', async t => {
   networker3.on('peer-add', peer => {
     n3Ext.send('world', peer)
   })
-  const dkey = hypercoreCrypto.randomBytes(32)
+  const dkey = ddatabaseCrypto.randomBytes(32)
   await networker1.configure(dkey)
   await networker2.configure(dkey, { announce: false, lookup: true, flush: true })
   await networker3.configure(dkey, { announce: false, lookup: true, flush: true })
@@ -383,7 +383,7 @@ test('bidirectional extension send/receive', async t => {
     })
   }
 
-  const dkey = hypercoreCrypto.randomBytes(32)
+  const dkey = ddatabaseCrypto.randomBytes(32)
   await networker1.configure(dkey)
   await networker2.configure(dkey, { announce: false, lookup: true, flush: true })
 
@@ -406,24 +406,24 @@ async function create (opts = {}) {
       return bootstrap.once('listening', resolve)
     })
   }
-  const store =  new Corestore(ram)
+  const store =  new Basestore(ram)
   await store.ready()
-  const networker = new CorestoreNetworker(store,  { ...opts, bootstrap: `localhost:${BOOTSTRAP_PORT}` })
+  const networker = new BasestoreNetworker(store,  { ...opts, bootstrap: `localhost:${BOOTSTRAP_PORT}` })
   return { store, networker }
 }
 
-function append (core, data) {
+function append (base, data) {
   return new Promise((resolve, reject) => {
-    core.append(data, err => {
+    base.append(data, err => {
       if (err) return reject(err)
       return resolve()
     })
   })
 }
 
-function get (core, idx, opts = {}) {
+function get (base, idx, opts = {}) {
   return new Promise((resolve, reject) => {
-    core.get(idx, opts, (err, data) => {
+    base.get(idx, opts, (err, data) => {
       if (err) return reject(err)
       return resolve(data)
     })

@@ -2,24 +2,24 @@ const crypto = require('crypto')
 const { EventEmitter } = require('events')
 const { promisify } = require('util')
 
-const HypercoreProtocol = require('@ddatabase/protocol')
+const DDatabaseProtocol = require('@ddatabase/protocol')
 const dswarm = require('dswarm')
 const codecs = require('codecs')
 const pump = require('pump')
 const eos = require('end-of-stream')
 
-const log = require('debug')('basestorevault:network')
+const log = require('debug')('basestore:network')
 
 const OUTER_STREAM = Symbol('networker-outer-stream')
 const STREAM_PEER = Symbol('networker-stream-peer')
 
-class CorestoreNetworker extends EventEmitter {
-  constructor (basestorevault, opts = {}) {
+class BasestoreNetworker extends EventEmitter {
+  constructor (basestore, opts = {}) {
     super()
-    this.basestorevault = basestorevault
+    this.basestore = basestore
     this.id = opts.id || crypto.randomBytes(32)
     this.opts = opts
-    this.keyPair = opts.keyPair || HypercoreProtocol.keyPair()
+    this.keyPair = opts.keyPair || DDatabaseProtocol.keyPair()
 
     this._replicationOpts = {
       id: this.id,
@@ -48,7 +48,7 @@ class CorestoreNetworker extends EventEmitter {
 
   _replicate (protocolStream) {
     // The initiator parameter here is ignored, since we're passing in a stream.
-    this.basestorevault.replicate(false, {
+    this.basestore.replicate(false, {
       ...this._replicationOpts,
       stream: protocolStream
     })
@@ -164,7 +164,7 @@ class CorestoreNetworker extends EventEmitter {
       var finishedHandshake = false
       var processed = false
 
-      const protocolStream = new HypercoreProtocol(isInitiator, { ...this._replicationOpts })
+      const protocolStream = new DDatabaseProtocol(isInitiator, { ...this._replicationOpts })
       protocolStream.on('handshake', () => {
         const deduped = info.deduplicate(protocolStream.publicKey, protocolStream.remotePublicKey)
         if (!deduped) {
@@ -275,7 +275,7 @@ class CorestoreNetworker extends EventEmitter {
   }
 }
 
-module.exports = CorestoreNetworker
+module.exports = BasestoreNetworker
 
 class SwarmExtension {
   constructor (networker, name, opts) {
